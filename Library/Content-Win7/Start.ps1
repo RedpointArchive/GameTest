@@ -78,4 +78,10 @@ Invoke-AU3MouseClick -X 144 -Y 193 # and click Login!
 
 Take-Screenshot -Path "C:\Output-Win7\Screenshot07.png"
 
+Write-Output "Waiting a little bit before relaunching Steam to get UI to appear..."
+Start-Sleep -Seconds 10
+
+# This will cause the main window to appear.
+Invoke-AU3Run -Program "C:\Program Files (x86)\Steam\Steam.exe"
+
 exit 0
