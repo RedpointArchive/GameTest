@@ -26,6 +26,16 @@ if ([string]::IsNullOrEmpty($SteamUsername) -or [string]::IsNullOrEmpty($SteamPa
     exit 1
 }
 
+if ([string]::IsNullOrEmpty($SteamAppId)) {
+    Write-Error "Unable to continue - no SteamAppId set.  Configure a CredentialsFile and pass to GameTest."
+    exit 1
+}
+
+if ([string]::IsNullOrEmpty($SteamTargetPath)) {
+    Write-Error "Unable to continue - no SteamTargetPath set.  Configure a CredentialsFile and pass to GameTest."
+    exit 1
+}
+
 [Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 function Take-Screenshot($Path) {
     $bounds = [Drawing.Rectangle]::FromLTRB(0, 0, 1024, 768)
@@ -112,17 +122,67 @@ Start-Sleep -Seconds 1
 Write-Output "Requesting installation of app $SteamAppId"
 Start-Process steam://install/$SteamAppId
 
+Write-Output "Taking a screenshot..."
+Take-Screenshot -Path "C:\Output-Win7\Screenshot08.png"
+
 Write-Output "Waiting for installation window to appear..."
 Wait-AU3Win -Title "Install"
 Start-Sleep -Seconds 1
+Write-Output "Taking a screenshot..."
+Take-Screenshot -Path "C:\Output-Win7\Screenshot09.png"
 Write-Output "Focusing on installation window..."
 Show-AU3WinActivate -Title "Install"
 Start-Sleep -Seconds 1
+Write-Output "Taking a screenshot..."
+Take-Screenshot -Path "C:\Output-Win7\Screenshot10.png"
 Write-Output "Moving installation window to top-left of screen..."
 Move-AU3Win -X 0 -Y 0 -Title "Install"
 Start-Sleep -Seconds 1
+Write-Output "Taking a screenshot..."
+Take-Screenshot -Path "C:\Output-Win7\Screenshot11.png"
 Write-Output "Clicking Next..."
 Invoke-AU3MouseClick -X 317 -Y 374
 Start-Sleep -Seconds 2
+Write-Output "Taking a screenshot..."
+Take-Screenshot -Path "C:\Output-Win7\Screenshot12.png"
+
+Write-Output "Steam will now install the app.  Once the app has installed, we'll close the installation window and request Steam run the app."
+
+while (!(Test-Path $SteamTargetPath)) {
+    [Console]::Write(".")
+}
+
+Write-Output "Taking a screenshot..."
+Take-Screenshot -Path "C:\Output-Win7\Screenshot13.png"
+
+Write-Output "The target file now exists."
+Write-Output "Closing installation window..."
+Invoke-AU3MouseClick -X 417 -Y 374
+Start-Sleep -Seconds 2
+
+Write-Output "Taking a screenshot..."
+Take-Screenshot -Path "C:\Output-Win7\Screenshot14.png"
+
+Write-Output "Requesting Steam start app $SteamAppId"
+Start-Process steam://run/$SteamAppId
+
+Write-Output "Taking a screenshot..."
+Take-Screenshot -Path "C:\Output-Win7\Screenshot15.png"
+
+Write-Output "Your application now has 5 minutes to start and write a file to $SteamAlivePath."
+Write-Output "If nothing appears within that time, we'll assume the app did not start correctly on the target platform."
+
+$Stopwatch = [Diagnostics.StopWatch]::StartNew()
+$Timeout = New-TimeSpan -Minutes 5
+while (!(Test-Path $SteamAlivePath) -and $Stopwatch.elapsed -lt $Timeout) {
+    [Console]::Write(".")
+}
+
+if (!(Test-Path $SteamAlivePath)) {
+    Write-Output "$SteamAlivePath didn't appear within 5 minutes.  Assuming app start failure!"
+    Write-Output "Taking a screenshot..."
+    Take-Screenshot -Path "C:\Output-Win7\Screenshot99_Error.png"
+    exit 1
+}
 
 exit 0
