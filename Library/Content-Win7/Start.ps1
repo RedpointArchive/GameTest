@@ -14,7 +14,7 @@ if (Test-Path Credentials.ps1) {
     . .\Credentials.ps1
 }
 
-if ([string].IsNullOrWhiteSpace($SteamUsername) -or [string].IsNullOrWhiteSpace($SteamPassword)) {
+if ([string]::IsNullOrWhiteSpace($SteamUsername) -or [string]::IsNullOrWhiteSpace($SteamPassword)) {
     Write-Error "Unable to continue - no SteamUsername or SteamPassword set.  Configure a CredentialsFile and pass to GameTest."
     exit 1
 }
