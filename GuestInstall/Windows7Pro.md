@@ -4,6 +4,8 @@
 
 In an Administrative PowerShell prompt, you must run `winrm s winrm/config/client '@{TrustedHosts="*"}'` to enable connections to the VM.
 
+If you are running on Windows Server, you must install the Remote Desktop Virtualization Host role: https://technet.microsoft.com/en-us/library/dd759143(v=ws.11).aspx
+
 ## Set up the baseline image
 
 1. Install Windows 7 Professional in Hyper-V using the ISO provided by MSDN.
@@ -13,7 +15,7 @@ In an Administrative PowerShell prompt, you must run `winrm s winrm/config/clien
 3. Once the VM has installed and booted, you will notice there is no network connectivity.
     - You will not be able to install Hyper-V integration services yet as they require Windows 7 SP1.
 4. Shutdown the VM.
-5. In Hyper-V settings, add a Legacy Network Adapter.
+5. In Hyper-V settings, add a Legacy Network Adapter and a RemoteFX Video Adapter.
 6. Boot the VM and login.  You should notice you now have network connectivity.  When prompted, select "Work Network".
 7. Open an Administrative PowerShell prompt and run the following:
    ```
