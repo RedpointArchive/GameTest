@@ -47,6 +47,7 @@ Invoke-AU3Run -Program "C:\Program Files (x86)\Steam\Steam.exe"
 
 # Handle the "Create Account or Login" screen
 Wait-AU3Win -Title "Steam"
+Start-Sleep -Seconds 1
 Move-AU3Win -X 0 -Y 0 -Title "Steam"
 Start-Sleep -Seconds 2
 Invoke-AU3MouseClick -X 5 -Y 5
@@ -56,6 +57,7 @@ Invoke-AU3MouseClick -X 211 -Y 335
 
 # Handle the login screen
 Wait-AU3Win -Title "Steam Login"
+Start-Sleep -Seconds 1
 Move-AU3Win -X 0 -Y 0 -Title "Steam Login"
 Start-Sleep -Seconds 1
 Invoke-AU3MouseClick -X 5 -Y 5

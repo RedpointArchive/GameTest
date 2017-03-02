@@ -204,8 +204,10 @@ try {
 
         if (Test-Path "Y:\Output-Win7\Transcript.log") {
             $Content = Get-Content -Raw "Y:\Output-Win7\Transcript.log"
-            $Substr = $Content.Substring($TranscriptPosition)
-            $TranscriptPosition += $Content.Length
+            if ($TranscriptPosition -lt $Content.Length) {
+                $Substr = $Content.Substring($TranscriptPosition)
+                $TranscriptPosition += $Substr.Length
+            }
             [Console]::Out.Write($Substr)
         }
 
