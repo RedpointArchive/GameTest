@@ -100,7 +100,7 @@ Write-Output "Taking a screenshot..."
 Take-Screenshot -Path "C:\Output-Win7\Screenshot07.png"
 
 Write-Output "Waiting a little bit before relaunching Steam to get UI to appear..."
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 25
 
 # This will cause the main window to appear.
 Invoke-AU3Run -Program "C:\Program Files (x86)\Steam\Steam.exe"

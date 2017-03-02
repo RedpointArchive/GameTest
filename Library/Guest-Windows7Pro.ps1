@@ -209,6 +209,10 @@ try {
                 $TranscriptPosition += $Substr.Length
             }
             [Console]::Out.Write($Substr)
+
+            if ($Content.Contains("Windows PowerShell Transcript End")) {
+                break;
+            }
         }
 
         Start-Sleep -Seconds 1
