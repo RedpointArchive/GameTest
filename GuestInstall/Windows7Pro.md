@@ -4,7 +4,11 @@
 
 In an Administrative PowerShell prompt, you must run `winrm s winrm/config/client '@{TrustedHosts="*"}'` to enable connections to the VM.
 
-If you are running on Windows Server, you must install the Remote Desktop Virtualization Host role: https://technet.microsoft.com/en-us/library/dd759143(v=ws.11).aspx
+The Hyper-V host must be capable of providing DirectX support to the Windows 7 guest.  There are two ways to do this:
+- Have a DirectX 11 compatible GPU on the host, and use RemoteFX to pass acceleration through to the guest.  You need to setup RemoteFX following this guide: https://social.technet.microsoft.com/wiki/contents/articles/16652.remotefx-vgpu-setup-and-configuration-guide-for-windows-server-2012.aspx.
+- Be running Windows Server 2016 with DDA supported, and have any DirectX 9 GPU that is also compatible with DDA.
+
+Please note that without either of these options configured, the guest will be unable to create DirectX 9 devices.  While Windows 8.1 and Windows 10 have a DirectX software renderer available, this functionality is not available on Windows 7, which requires some level of real hardware to work.
 
 ## Set up the baseline image
 
@@ -15,7 +19,7 @@ If you are running on Windows Server, you must install the Remote Desktop Virtua
 3. Once the VM has installed and booted, you will notice there is no network connectivity.
     - You will not be able to install Hyper-V integration services yet as they require Windows 7 SP1.
 4. Shutdown the VM.
-5. In Hyper-V settings, add a Legacy Network Adapter and a RemoteFX Video Adapter.
+5. In Hyper-V settings, add a Legacy Network Adapter.  If you are using RemoteFX to provide DirectX support, add the RemoteFX adapter now.
 6. Boot the VM and login.  You should notice you now have network connectivity.  When prompted, select "Work Network".
 7. Open an Administrative PowerShell prompt and run the following:
    ```
