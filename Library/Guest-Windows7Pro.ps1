@@ -144,15 +144,17 @@ try {
     }
 
     Write-Output "Enabling configuration for PSExec..."
-    Invoke-Command -ComputerName $IpV4Address -Credential $LoginCredentials -ScriptBlock {
-        net share admin$
-        net share IPC$
-        net share c$=C:\
-        net stop server
-        net start server
-        netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes
-        netsh advfirewall set currentprofile state on
-    }
+    try {
+        Invoke-Command -ComputerName $IpV4Address -Credential $LoginCredentials -ScriptBlock {
+            try { net share admin$ } catch {}
+            try { net share IPC$ } catch {}
+            try { net share c$=C:\ } catch {}
+            try { net stop server } catch {}
+            try { net start server } catch {}
+            try { netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes } catch {}
+            try { netsh advfirewall set currentprofile state on } catch {}
+        }
+    } catch {}
 
     Write-Output "Running tests via PSExec..."
     ..\PSExec\PSExec.exe -accepteula -nobanner \\$IpV4Address -u qa -p qa -i -h "C:\Windows\system32\windowspowershell\v1.0\powershell.exe" -ExecutionPolicy Bypass "C:\Content-Win7\Start.ps1"
