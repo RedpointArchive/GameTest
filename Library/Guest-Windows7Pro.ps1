@@ -207,8 +207,8 @@ try {
             if ($TranscriptPosition -lt $Content.Length) {
                 $Substr = $Content.Substring($TranscriptPosition)
                 $TranscriptPosition += $Substr.Length
+                [Console]::Out.Write($Substr)
             }
-            [Console]::Out.Write($Substr)
 
             if ($Content.Contains("Windows PowerShell Transcript End")) {
                 break;

@@ -100,9 +100,29 @@ Write-Output "Taking a screenshot..."
 Take-Screenshot -Path "C:\Output-Win7\Screenshot07.png"
 
 Write-Output "Waiting a little bit before relaunching Steam to get UI to appear..."
-Start-Sleep -Seconds 25
+Start-Sleep -Seconds 30
 
 # This will cause the main window to appear.
 Invoke-AU3Run -Program "C:\Program Files (x86)\Steam\Steam.exe"
+
+Write-Output "Waiting for Steam main window to open..."
+Wait-AU3Win -Title "Steam"
+Start-Sleep -Seconds 1
+
+Write-Output "Requesting installation of app $SteamAppId"
+Start-Process steam://install/$SteamAppId
+
+Write-Output "Waiting for installation window to appear..."
+Wait-AU3Win -Title "Install"
+Start-Sleep -Seconds 1
+Write-Output "Focusing on installation window..."
+Show-AU3WinActivate -Title "Install"
+Start-Sleep -Seconds 1
+Write-Output "Moving installation window to top-left of screen..."
+Move-AU3Win -X 0 -Y 0 -Title "Install"
+Start-Sleep -Seconds 1
+Write-Output "Clicking Next..."
+Invoke-AU3MouseClick -X 317 -Y 374
+Start-Sleep -Seconds 2
 
 exit 0
