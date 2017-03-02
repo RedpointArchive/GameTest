@@ -176,6 +176,13 @@ try {
         "C:\Content-Win7\Start.ps1"
     )
 
+    if (Test-Path ..\Screenshots) {
+        Remove-Item -Recurse -Force ..\Screenshots
+    }
+    if (!(Test-Path ..\Screenshots)) {
+        mkdir ..\Screenshots
+    }
+
     Write-Output "Monitoring PSExec and showing transcript data.."
     $Stopwatch = [Diagnostics.StopWatch]::StartNew()
     $Timeout = New-TimeSpan -Minutes 60
@@ -185,13 +192,6 @@ try {
             Write-Output "No Output-Win7 directory, script hasn't started yet..."
             Start-Sleep -Seconds 1
             continue
-        }
-
-        if (Test-Path ..\Screenshots) {
-            Remove-Item -Recurse -Force ..\Screenshots
-        }
-        if (!(Test-Path ..\Screenshots)) {
-            mkdir ..\Screenshots
         }
 
         foreach ($screenshot in (Get-Item Y:\Output-Win7).GetFiles("Screenshot*.png")) {

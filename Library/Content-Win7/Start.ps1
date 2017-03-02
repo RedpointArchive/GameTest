@@ -46,38 +46,57 @@ Write-Output "Launching Steam..."
 Invoke-AU3Run -Program "C:\Program Files (x86)\Steam\Steam.exe"
 
 # Handle the "Create Account or Login" screen
+Write-Output "Waiting for Steam create/login window to open..."
 Wait-AU3Win -Title "Steam"
 Start-Sleep -Seconds 1
+Write-Output "Moving Steam create/login window to top-left of screen..."
 Move-AU3Win -X 0 -Y 0 -Title "Steam"
 Start-Sleep -Seconds 2
+Write-Output "Bringing Steam create/login window to focus..."
 Invoke-AU3MouseClick -X 5 -Y 5
+Write-Output "Taking a screenshot..."
 Take-Screenshot -Path "C:\Output-Win7\Screenshot02.png"
 Start-Sleep -Seconds 1
+Write-Output "Clicking 'Login with an existing account'..."
 Invoke-AU3MouseClick -X 211 -Y 335
 
 # Handle the login screen
+Write-Output "Waiting for Steam login window to open..."
 Wait-AU3Win -Title "Steam Login"
 Start-Sleep -Seconds 1
+Write-Output "Moving Steam login window to top-left of screen..."
 Move-AU3Win -X 0 -Y 0 -Title "Steam Login"
 Start-Sleep -Seconds 1
+Write-Output "Bringing Steam login window to focus..."
 Invoke-AU3MouseClick -X 5 -Y 5
+Write-Output "Taking a screenshot..."
 Take-Screenshot -Path "C:\Output-Win7\Screenshot03.png"
 Start-Sleep -Seconds 1
+Write-Output "Clicking on username field..."
 Invoke-AU3MouseClick -X 130 -Y 95
 Start-Sleep -Seconds 1
+Write-Output "Typing in username..."
 Send-AU3Key -Key $SteamUsername
 Start-Sleep -Seconds 1
+Write-Output "Taking a screenshot..."
 Take-Screenshot -Path "C:\Output-Win7\Screenshot04.png"
+Write-Output "Clicking on password field..."
 Invoke-AU3MouseClick -X 130 -Y 134
 Start-Sleep -Seconds 1
+Write-Output "Typing in password..."
 Send-AU3Key -Key $SteamPassword
 Start-Sleep -Seconds 1
+Write-Output "Taking a screenshot..."
 Take-Screenshot -Path "C:\Output-Win7\Screenshot05.png"
+Write-Output "Checking 'Remember Me'..."
 Invoke-AU3MouseClick -X 123 -Y 162 # Tick Remember Me
 Start-Sleep -Seconds 1
+Write-Output "Taking a screenshot..."
 Take-Screenshot -Path "C:\Output-Win7\Screenshot06.png"
+Write-Output "Clicking 'Login'..."
 Invoke-AU3MouseClick -X 144 -Y 193 # and click Login!
 
+Write-Output "Taking a screenshot..."
 Take-Screenshot -Path "C:\Output-Win7\Screenshot07.png"
 
 Write-Output "Waiting a little bit before relaunching Steam to get UI to appear..."
