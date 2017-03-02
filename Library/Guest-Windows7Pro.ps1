@@ -143,7 +143,19 @@ try {
         Copy-VMFile -VM $VM -SourcePath $file.FullName -DestinationPath ("C:\Content-Win7\" + $file.Name) -FileSource Host -CreateFullPath
     }
 
-    ..\PSExec\PSExec.exe -accepteula -nobanner \\$IpV4Address -u qa -p qa -i -h "%systemroot%\system32\windowspowershell\v1.0\powershell.exe" "C:\Content-Win7\Start.ps1"
+    Write-Output "Enabling configuration for PSExec..."
+    Invoke-Command -ComputerName $IpV4Address -Credential $LoginCredentials -ScriptBlock {
+        net share admin$
+        net share IPC$
+        net share c$=C:\
+        net stop server
+        net start server
+        netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes
+        netsh advfirewall set currentprofile state on
+    }
+
+    Write-Output "Running tests via PSExec..."
+    ..\PSExec\PSExec.exe -accepteula -nobanner \\$IpV4Address -u qa -p qa -i -h "C:\Windows\system32\windowspowershell\v1.0\powershell.exe" -ExecutionPolicy Bypass "C:\Content-Win7\Start.ps1"
     exit $LastExitCode
 } finally {
     $DidVMRestore = $True
