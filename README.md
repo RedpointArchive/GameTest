@@ -26,6 +26,8 @@ $SteamAlivePath = "FULL_PATH_OF_A_FILE_OR_DIRECTORY_THAT_IS_CREATED_ON_GAME_LAUN
 $SteamAppChannel = "NOT_IMPLEMENTED_LEAVE_BLANK"
 ```
 
+The specified Steam account must already have a license for the app (i.e. you must have logged in somewhere else and redeemed a Steam key for the app).  The Steam account must also **have Steam Guard disabled**.  We can not automate Steam Guard.
+
 Open a PowerShell prompt and navigate to the `Library` directory in this repository.  Then run:
 
 ```
