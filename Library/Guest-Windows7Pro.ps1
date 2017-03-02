@@ -156,9 +156,65 @@ try {
         }
     } catch {}
 
+    Write-Output "Mapping remote C:\ drive to PowerShell Y:\ drive..."
+    New-PSDrive -Name Y -PSProvider filesystem -Root \\$IpV4Address\C$ -Credential $LoginCredentials
+
     Write-Output "Running tests via PSExec..."
-    ..\PSExec\PSExec.exe -accepteula -nobanner \\$IpV4Address -u qa -p qa -i -h "C:\Windows\system32\windowspowershell\v1.0\powershell.exe" -ExecutionPolicy Bypass "C:\Content-Win7\Start.ps1"
-    exit $LastExitCode
+    $PSExecProcess = Start-Process -FilePath ..\PSExec\PSExec.exe -ArgumentList @(
+        "-accepteula",
+        "-nobanner",
+        "\\$IpV4Address",
+        "-u",
+        "qa",
+        "-p",
+        "qa",
+        "-i",
+        "-h",
+        "C:\Windows\system32\windowspowershell\v1.0\powershell.exe",
+        "-ExecutionPolicy",
+        "Bypass",
+        "C:\Content-Win7\Start.ps1"
+    )
+
+    Write-Output "Monitoring PSExec and showing transcript data.."
+    $Stopwatch = [Diagnostics.StopWatch]::StartNew()
+    $Timeout = New-TimeSpan -Minutes 60
+    $TranscriptPosition = 0
+    do {
+        if (!(Test-Path Y:\Output-Win7)) {
+            Write-Output "No Output-Win7 directory, script hasn't started yet..."
+            Start-Sleep -Seconds 1
+            continue
+        }
+
+        if (Test-Path ..\Screenshots) {
+            Remove-Item -Recurse -Force ..\Screenshots
+        }
+        if (!(Test-Path ..\Screenshots)) {
+            mkdir ..\Screenshots
+        }
+
+        foreach ($screenshot in (Get-Item Y:\Output-Win7).GetFiles("Screenshot*.png")) {
+            if (!(Test-Path ("..\Screenshots\" + $screenshot.Name))) {
+                Write-Output "Copying screenshot $($screenshot.Name)..."
+                Copy-Item -Force ("Y:\Output-Win7\" + $screenshot.Name) ("..\Screenshots\" + $screenshot.Name)
+                Copy-Item -Force ("Y:\Output-Win7\" + $screenshot.Name) ("..\Screenshots\ScreenshotLatest.png")
+            }
+        }
+
+        if (Test-Path "Y:\Output-Win7\Transcript.log") {
+            $Content = Get-Content -Raw "Y:\Output-Win7\Transcript.log"
+            $Substr = $Content.Substring($TranscriptPosition)
+            $TranscriptPosition += $Content.Length
+            [Console]::Out.Write($Substr)
+        }
+
+        Start-Sleep -Seconds 1
+    } while ((!$PSExecProcess.HasExited -and $Stopwatch.elapsed -lt $Timeout))
+     
+    Write-Output "Test run complete with exit code $($PSExecProcess.ExitCode)."
+
+    exit $PSExecProcess.ExitCode
 } finally {
     $DidVMRestore = $True
     try {
