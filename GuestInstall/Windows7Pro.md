@@ -49,9 +49,10 @@ Please note that without either of these options configured, the guest will be u
 29. Login.
 30. Follow the instructions at this URL to enable automatic login to the "QA" account: https://technet.microsoft.com/en-us/library/ee872306.aspx
 31. Reboot the machine and verify that it automatically logs in.
-32. Shutdown the machine.
-33. Remove the Legacy Network Adapter from the machine.  It is no longer needed.
-34. With the VM turned off, from "Action" menu select "Checkpoint..." and name the checkpoint "Baseline".
+32. Turn off UAC in the Control Panel.  There is no known way to automate through UAC dialogs, and these may appear when Steam attempts to install redistributable packages.
+33. Shutdown the machine.
+34. Remove the Legacy Network Adapter from the machine.  It is no longer needed.
+35. With the VM turned off, from "Action" menu select "Checkpoint..." and name the checkpoint "Baseline".
 
 ## Test the baseline image
 
