@@ -65,3 +65,5 @@ Take-Screenshot $Bounds "C:\Screenshot06.png"
 Invoke-AU3MouseClick -X 144 -Y 193 # and click Login!
 
 Take-Screenshot $Bounds "C:\Screenshot07.png"
+
+exit 0

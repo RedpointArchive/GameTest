@@ -143,12 +143,8 @@ try {
         Copy-VMFile -VM $VM -SourcePath $file.FullName -DestinationPath ("C:\Content-Win7\" + $file.Name) -FileSource Host -CreateFullPath
     }
 
-    <#..\PSExec\PSExec.exe 
-
-    Invoke-Command -ComputerName $IpV4Address -Credential $LoginCredentials -ScriptBlock {
-        
-    }#>
-
+    ..\PSExec\PSExec.exe -accepteula -nobanner \\$IpV4Address -u qa -p qa -i -h "%systemroot%\system32\windowspowershell\v1.0\powershell.exe" "C:\Content-Win7\Start.ps1"
+    exit $LastExitCode
 } finally {
     $DidVMRestore = $True
     try {
