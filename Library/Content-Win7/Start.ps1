@@ -118,6 +118,50 @@ Invoke-AU3Run -Program "C:\Program Files (x86)\Steam\Steam.exe"
 Write-Output "Waiting for Steam main window to open..."
 Wait-AU3Win -Title "Steam"
 Start-Sleep -Seconds 1
+Write-Output "Maximizing Steam window..."
+Set-AU3WinState -Title "Steam" -Flags 3 # 3 = maximized
+Start-Sleep -Seconds 1
+Write-Output "Focusing on Steam window..."
+Show-AU3WinActivate -Title "Steam"
+Start-Sleep -Seconds 1
+
+<#
+Write-Output "Closing any Steam Guard prompt..."
+Invoke-AU3MouseClick -X 999 -Y 114
+Start-Sleep -Seconds 2
+
+Write-Output "Searching for $SteamAppName..."
+Invoke-AU3MouseClick -X 43 -Y 86
+Start-Sleep -Seconds 1
+Send-AU3Key -Key $SteamAppName
+Start-Sleep -Seconds 1
+
+Write-Output "Clicking on app..."
+Invoke-AU3MouseClick -X 24 -Y 115 -Button Right
+Start-Sleep -Seconds 1
+
+Write-Output "Clicking on Properties..."
+Invoke-AU3MouseClick -X 43 -Y 374
+Start-Sleep -Seconds 1
+
+Write-Output "Waiting for Properties window to appear..."
+Wait-AU3Win -Title "$SteamAppName - Properties"
+Start-Sleep -Seconds 1
+Write-Output "Moving properties window to top-left of screen..."
+Move-AU3Win -X 0 -Y 0 -Title "$SteamAppName - Properties"
+Start-Sleep -Seconds 1
+
+Write-Output "Clicking on Betas tab..."
+Invoke-AU3MouseClick -X 318 -Y 40
+Start-Sleep -Seconds 1
+
+Write-Output "Entering beta access code..."
+Invoke-AU3MouseClick -X 45 -Y 178
+Start-Sleep -Seconds 1
+
+################################
+
+#>
 
 Write-Output "Requesting installation of app $SteamAppId"
 Start-Process steam://install/$SteamAppId
@@ -162,6 +206,25 @@ Start-Sleep -Seconds 2
 
 Write-Output "Taking a screenshot..."
 Take-Screenshot -Path "C:\Output-Win7\Screenshot14.png"
+
+<#
+Write-Output "Exiting Steam so we can switch to any necessary app channel..."
+& "C:\Program Files (x86)\Steam\Steam.exe" -shutdown
+
+Write-Output "Waiting 10 seconds..."
+Start-Sleep -Seconds 10
+
+Write-Output "Updating user config to opt into '$SteamAppChannel' channel..."
+$lines = (Get-Content "C:\Program Files (x86)\Steam\steamapps\appmanifest_$SteamAppId.acf")
+$new_lines = @()
+for ($i = 0; $i -lt $lines.Length; $i++) {
+    $new_lines += $lines[$i];
+    if ($lines[$i].Contains("language")) {
+        $new_lines += "`t`t`"betakey`"`t`"$SteamAppChannel`""
+    }
+}
+Set-Content -Path "C:\Program Files (x86)\Steam\steamapps\appmanifest_$SteamAppId.acf" -Value $new_lines
+#>
 
 Write-Output "Requesting Steam start app $SteamAppId"
 Start-Process steam://run/$SteamAppId
