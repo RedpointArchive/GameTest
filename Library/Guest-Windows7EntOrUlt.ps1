@@ -46,12 +46,6 @@ try {
             continue;
         }
 
-        if (((Get-VMNetworkAdapter -IsLegacy $False -VM $VM).Status) -ne "Ok") {
-            Write-Host "Network adapter is not in Ok status, waiting..."
-            Start-Sleep -Seconds 1
-            continue;
-        }
-
         if (((Get-VMNetworkAdapter -IsLegacy $False -VM $VM).IpAddresses).Length -eq 0) {
             Write-Host "Network adapter has no IP addresses, waiting..."
             Start-Sleep -Seconds 1
