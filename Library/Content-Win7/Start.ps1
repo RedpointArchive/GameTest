@@ -248,6 +248,10 @@ while (!(Test-Path $SteamAlivePath) -and $Stopwatch.elapsed -lt $Timeout) {
     Start-Sleep -Seconds 30
 }
 
+Write-Output "Waiting 10 seconds and then taking a final screenshot."
+Start-Sleep -Seconds 10
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
+
 if (!(Test-Path $SteamAlivePath)) {
     Write-Output "$SteamAlivePath didn't appear within 5 minutes.  Assuming app start failure!"
     Write-Output "Taking a screenshot..."
