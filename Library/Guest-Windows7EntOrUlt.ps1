@@ -26,11 +26,15 @@ Import-Module Hyper-V
 
 $VM = Get-VM -Name $GuestName
 
+taskkill /f /im mstsc.exe
+
 Write-Output "Restoring VM from snapshot..."
 Restore-VMSnapshot -VM $VM -Name $Snapshot -Confirm:$False
 Write-Output "Starting VM..."
 Start-VM -VM $VM -Confirm:$False
 
+$HasCreatedRDPSession = $False
+$RDPProcess = $Null
 try {
     $LoginCredentials = New-Object System.Management.Automation.PSCredential("qa" , (ConvertTo-SecureString "qa" -AsPlainText -Force));
 
@@ -153,6 +157,12 @@ try {
     Write-Output "Mapping remote C:\ drive to PowerShell Y:\ drive..."
     New-PSDrive -Name Y -PSProvider filesystem -Root \\$IpV4Address\C$ -Credential $LoginCredentials
 
+    Write-Output "Starting Remote Desktop to enable RemoteFX..."
+    cmdkey /generic:$IpV4Address /user:QA /pass:qa
+    $RDPProcess = Start-Process -FilePath C:\Windows\System32\mstsc.exe -ArgumentList @("/v:$Ipv4Address", "/admin", "/w:1024", "/h:768")
+    $HasCreatedRDPSession = $True
+    Start-Sleep -Seconds 5
+
     Write-Output "Running tests via PSExec..."
     $PSExecProcess = Start-Process -FilePath ..\PSExec\PSExec.exe -ArgumentList @(
         "-accepteula",
@@ -163,6 +173,7 @@ try {
         "-p",
         "qa",
         "-i",
+        "1",
         "-h",
         "C:\Windows\system32\windowspowershell\v1.0\powershell.exe",
         "-ExecutionPolicy",
@@ -212,6 +223,8 @@ try {
         Start-Sleep -Seconds 1
     } while ((!$PSExecProcess.HasExited -and $Stopwatch.elapsed -lt $Timeout))
      
+    Stop-Process -Force $RDPProcess.Id
+    $HasCreatedRDPSession = $False
     Write-Output "Test run complete with exit code $($PSExecProcess.ExitCode)."
 
     exit $PSExecProcess.ExitCode
@@ -221,4 +234,7 @@ try {
         Write-Output "Restoring VM from snapshot..."
         Restore-VMSnapshot -VM $VM -Name $Target -Confirm:$False
     } catch {}
+    if ($HasCreatedRDPSession) {
+        Stop-Process -Force $RDPProcess.Id
+    }
 }

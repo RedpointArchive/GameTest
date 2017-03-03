@@ -232,13 +232,14 @@ Start-Process steam://run/$SteamAppId
 Write-Output "Taking a screenshot..."
 Take-Screenshot -Path "C:\Output-Win7\Screenshot15.png"
 
-Write-Output "Your application now has 5 minutes to start and write a file to $SteamAlivePath."
+Write-Output "Your application now has 15 minutes to start (allowing for redist installs) and write a file to $SteamAlivePath."
 Write-Output "If nothing appears within that time, we'll assume the app did not start correctly on the target platform."
 
 $Stopwatch = [Diagnostics.StopWatch]::StartNew()
-$Timeout = New-TimeSpan -Minutes 5
+$Timeout = New-TimeSpan -Minutes 15
 while (!(Test-Path $SteamAlivePath) -and $Stopwatch.elapsed -lt $Timeout) {
     [Console]::Write(".")
+    Start-Sleep -Seconds 30
 }
 
 if (!(Test-Path $SteamAlivePath)) {
