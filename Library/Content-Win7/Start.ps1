@@ -50,7 +50,7 @@ function Take-Screenshot($Path) {
     $bmp.Dispose()
 }
 
-Take-Screenshot -Path "C:\Output-Win7\Screenshot01.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 
 Write-Output "Launching Steam..."
 Invoke-AU3Run -Program "C:\Program Files (x86)\Steam\Steam.exe"
@@ -65,7 +65,7 @@ Start-Sleep -Seconds 2
 Write-Output "Bringing Steam create/login window to focus..."
 Invoke-AU3MouseClick -X 5 -Y 5
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot02.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 Start-Sleep -Seconds 1
 Write-Output "Clicking 'Login with an existing account'..."
 Invoke-AU3MouseClick -X 211 -Y 335
@@ -80,7 +80,7 @@ Start-Sleep -Seconds 1
 Write-Output "Bringing Steam login window to focus..."
 Invoke-AU3MouseClick -X 5 -Y 5
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot03.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 Start-Sleep -Seconds 1
 Write-Output "Clicking on username field..."
 Invoke-AU3MouseClick -X 130 -Y 95
@@ -89,7 +89,7 @@ Write-Output "Typing in username..."
 Send-AU3Key -Key $SteamUsername
 Start-Sleep -Seconds 1
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot04.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 Write-Output "Clicking on password field..."
 Invoke-AU3MouseClick -X 130 -Y 134
 Start-Sleep -Seconds 1
@@ -97,20 +97,24 @@ Write-Output "Typing in password..."
 Send-AU3Key -Key $SteamPassword
 Start-Sleep -Seconds 1
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot05.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 Write-Output "Checking 'Remember Me'..."
 Invoke-AU3MouseClick -X 123 -Y 162 # Tick Remember Me
 Start-Sleep -Seconds 1
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot06.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 Write-Output "Clicking 'Login'..."
 Invoke-AU3MouseClick -X 144 -Y 193 # and click Login!
 
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot07.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 
 Write-Output "Waiting a little bit before relaunching Steam to get UI to appear..."
-Start-Sleep -Seconds 30
+for ($i = 0; $i -lt 30; $i += 5) {
+    Start-Sleep -Seconds 5
+    Write-Output "Taking a screenshot..."
+    Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
+}
 
 # This will cause the main window to appear.
 Invoke-AU3Run -Program "C:\Program Files (x86)\Steam\Steam.exe"
@@ -167,37 +171,39 @@ Write-Output "Requesting installation of app $SteamAppId"
 Start-Process steam://install/$SteamAppId
 
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot08.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 
 Write-Output "Waiting for installation window to appear..."
 Wait-AU3Win -Title "Install"
 Start-Sleep -Seconds 1
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot09.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 Write-Output "Focusing on installation window..."
 Show-AU3WinActivate -Title "Install"
 Start-Sleep -Seconds 1
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot10.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 Write-Output "Moving installation window to top-left of screen..."
 Move-AU3Win -X 0 -Y 0 -Title "Install"
 Start-Sleep -Seconds 1
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot11.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 Write-Output "Clicking Next..."
 Invoke-AU3MouseClick -X 317 -Y 374
 Start-Sleep -Seconds 2
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot12.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 
 Write-Output "Steam will now install the app.  Once the app has installed, we'll close the installation window and request Steam run the app."
 
 while (!(Test-Path $SteamTargetPath)) {
     [Console]::Write(".")
+    Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
+    Start-Sleep -Seconds 10
 }
 
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot13.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 
 Write-Output "The target file now exists."
 Write-Output "Closing installation window..."
@@ -205,7 +211,7 @@ Invoke-AU3MouseClick -X 417 -Y 374
 Start-Sleep -Seconds 2
 
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot14.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 
 <#
 Write-Output "Exiting Steam so we can switch to any necessary app channel..."
@@ -230,7 +236,7 @@ Write-Output "Requesting Steam start app $SteamAppId"
 Start-Process steam://run/$SteamAppId
 
 Write-Output "Taking a screenshot..."
-Take-Screenshot -Path "C:\Output-Win7\Screenshot15.png"
+Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 
 Write-Output "Your application now has 15 minutes to start (allowing for redist installs) and write a file to $SteamAlivePath."
 Write-Output "If nothing appears within that time, we'll assume the app did not start correctly on the target platform."
@@ -245,7 +251,7 @@ while (!(Test-Path $SteamAlivePath) -and $Stopwatch.elapsed -lt $Timeout) {
 if (!(Test-Path $SteamAlivePath)) {
     Write-Output "$SteamAlivePath didn't appear within 5 minutes.  Assuming app start failure!"
     Write-Output "Taking a screenshot..."
-    Take-Screenshot -Path "C:\Output-Win7\Screenshot99_Error.png"
+    Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
     exit 1
 }
 

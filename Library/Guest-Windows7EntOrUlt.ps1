@@ -196,16 +196,12 @@ try {
     do {
         if (!(Test-Path Y:\Output-Win7)) {
             Write-Output "No Output-Win7 directory, script hasn't started yet..."
-            Start-Sleep -Seconds 1
+            Start-Sleep -Seconds 5
             continue
         }
 
-        foreach ($screenshot in (Get-Item Y:\Output-Win7).GetFiles("Screenshot*.png")) {
-            if (!(Test-Path ("..\Screenshots\" + $screenshot.Name))) {
-                Write-Output "Copying screenshot $($screenshot.Name)..."
-                Copy-Item -Force ("Y:\Output-Win7\" + $screenshot.Name) ("..\Screenshots\" + $screenshot.Name)
-                Copy-Item -Force ("Y:\Output-Win7\" + $screenshot.Name) ("..\Screenshots\ScreenshotLatest.png")
-            }
+        if (Test-Path Y:\Output-Win7\ScreenshotLatest.png) {
+            Copy-Item -Force ("Y:\Output-Win7\ScreenshotLatest.png") ("..\Screenshots\ScreenshotLatest.png")
         }
 
         if (Test-Path "Y:\Output-Win7\Transcript.log") {
@@ -221,7 +217,7 @@ try {
             }
         }
 
-        Start-Sleep -Seconds 1
+        Start-Sleep -Seconds 5
     } while ((!$PSExecProcess.HasExited -and $Stopwatch.elapsed -lt $Timeout))
      
     taskkill /f /im mstsc.exe
