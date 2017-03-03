@@ -8,6 +8,7 @@ trap
     if (!$DidVMRestore) {
         try {
             Write-Output "Restoring VM from snapshot..."
+            $VM = Get-VM -Name $GuestName
             Restore-VMSnapshot -VM $VM -Name $Target -Confirm:$False
         } catch {}
     }
@@ -223,7 +224,7 @@ try {
         Start-Sleep -Seconds 1
     } while ((!$PSExecProcess.HasExited -and $Stopwatch.elapsed -lt $Timeout))
      
-    Stop-Process -Force $RDPProcess.Id
+    taskkill /f /im mstsc.exe
     $HasCreatedRDPSession = $False
     Write-Output "Test run complete with exit code $($PSExecProcess.ExitCode)."
 
@@ -232,9 +233,10 @@ try {
     $DidVMRestore = $True
     try {
         Write-Output "Restoring VM from snapshot..."
+        $VM = Get-VM -Name $GuestName
         Restore-VMSnapshot -VM $VM -Name $Target -Confirm:$False
     } catch {}
     if ($HasCreatedRDPSession) {
-        Stop-Process -Force $RDPProcess.Id
+        taskkill /f /im mstsc.exe
     }
 }
