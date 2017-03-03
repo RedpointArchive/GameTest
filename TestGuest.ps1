@@ -9,8 +9,8 @@ trap
 
 Set-Location $PSScriptRoot
 
-if ($GuestType -eq "Windows7Pro") {
-    .\Library\Guest-Windows7Pro.ps1 -GuestName $GuestName -Target "Baseline"
+if ($GuestType -eq "Windows7EntOrUlt") {
+    .\Library\Guest-Windows7EntOrUlt.ps1 -GuestName $GuestName -Target "Baseline"
 } else {
-    throw "Unsupported guest type.  Supported guest types are: 'Windows7Pro'."
+    throw "Unsupported guest type.  Supported guest types are: 'Windows7EntOrUlt'."
 }

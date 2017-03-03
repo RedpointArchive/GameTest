@@ -1,25 +1,25 @@
-# Guest Installation Guide: Windows 7 Professional SP1
+# Guest Installation Guide: Windows 7 Enterprise / Ultimate SP1
 
 ## Configure host
 
 In an Administrative PowerShell prompt, you must run `winrm s winrm/config/client '@{TrustedHosts="*"}'` to enable connections to the VM.
 
-The Hyper-V host must be capable of providing DirectX support to the Windows 7 guest.  There are two ways to do this:
-- Have a DirectX 11 compatible GPU on the host, and use RemoteFX to pass acceleration through to the guest.  You need to setup RemoteFX following this guide: https://social.technet.microsoft.com/wiki/contents/articles/16652.remotefx-vgpu-setup-and-configuration-guide-for-windows-server-2012.aspx.
-- Be running Windows Server 2016 with DDA supported, and have any DirectX 9 GPU that is also compatible with DDA.
+The Hyper-V host must have a hardware accelerated GPU in order to provide DirectX support to the guest.  We run an ASUS NVIDIA GT710 (x8 PCI-e) GPU in a Dell R710, which works for this purpose.
 
-Please note that without either of these options configured, the guest will be unable to create DirectX 9 devices.  While Windows 8.1 and Windows 10 have a DirectX software renderer available, this functionality is not available on Windows 7, which requires some level of real hardware to work.
+Windows 7 guests **only** support RemoteFX, which in turn requires the Windows 7 edition to be either Enterprise or Ultimate (only these editions support running as a RemoteFX client).  DDA for GPU passthrough is not available to Windows 7 guests (even if the host supports it).
+
+Please note that without this configured correctly, the guest will be unable to create DirectX devices, which will severely limit your ability to automate the testing of games.
 
 ## Set up the baseline image
 
-1. Install Windows 7 Professional in Hyper-V using the ISO provided by MSDN.
+1. Install Windows 7 Ultimate in Hyper-V using the ISO provided by MSDN.
     - Do not turn on updates.  We will manually install Service Pack 1 to ensure that is the baseline.
     - GameTest uses Hyper-V snapshotting to restore the guest to it's original state after each run.
 2. Set the username to be "qa" and the password to be "qa".
 3. Once the VM has installed and booted, you will notice there is no network connectivity.
     - You will not be able to install Hyper-V integration services yet as they require Windows 7 SP1.
 4. Shutdown the VM.
-5. In Hyper-V settings, add a Legacy Network Adapter.  If you are using RemoteFX to provide DirectX support, add the RemoteFX adapter now.
+5. In Hyper-V settings, add a Legacy Network Adapter and a RemoteFX Video Adapter.
 6. Boot the VM and login.  You should notice you now have network connectivity.  When prompted, select "Work Network".
 7. Open an Administrative PowerShell prompt and run the following:
    ```
@@ -52,11 +52,21 @@ Please note that without either of these options configured, the guest will be u
 32. Turn off UAC in the Control Panel.  There is no known way to automate through UAC dialogs, and these may appear when Steam attempts to install redistributable packages.
 33. Shutdown the machine.
 34. Remove the Legacy Network Adapter from the machine.  It is no longer needed.
-35. With the VM turned off, from "Action" menu select "Checkpoint..." and name the checkpoint "Baseline".
+35. Start the machine.
+36. From Start Menu, Right click on computer and select properties
+37. Click Remote Settings
+38. Click Allow Connections from any version of Remote Desktop (less secure)
+39. Shutdown the machine
+40. Under machine settings, add RemoteFX adapter (configure it however you like resolution, VRAM)
+41. Start the machine again
+42. After it logs in, you'll be prompted to restart (it has just installed the RemoteFX driver).  Click Restart Now
+43. From here on out, you'll need to RDP to the machine to use it (Hyper-V will tell you the IP address to connect to, just use the QA account to login).
+44. RDP'ing into the machine, shut it down.
+45. With the VM turned off, from "Action" menu select "Checkpoint..." and name the checkpoint "Baseline".
 
 ## Test the baseline image
 
-From this repository, run `.\TestGuest.ps1 -GuestType Windows7Pro -GuestName NAME_OF_VM -Target Baseline`.
+From this repository, run `.\TestGuest.ps1 -GuestType Windows7EntOrUlt -GuestName NAME_OF_VM -Target Baseline`.
 
 This will validate that the machine can startup, that network adapters are configured correctly, and that GameTest can communicate with the VM using Guest Integrations and PowerShell.
 
