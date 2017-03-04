@@ -42,18 +42,18 @@ try {
     Write-Output "Waiting for the network adapter to be assigned an IP address..."
     $IsConnected = $False
     $Stopwatch = [Diagnostics.StopWatch]::StartNew()
-    $Timeout = New-TimeSpan -Minutes 5
+    $Timeout = New-TimeSpan -Minutes 15
     while (!$IsConnected -and $Stopwatch.elapsed -lt $Timeout) {
         $NetworkAdapter = Get-VMNetworkAdapter -IsLegacy $False -VM $VM
         if ($NetworkAdapter.MacAddress -eq $Null) {
             Write-Host "Network adapter does not have MAC address assigned, waiting..."
-            Start-Sleep -Seconds 1
+            Start-Sleep -Seconds 5
             continue;
         }
 
         if (((Get-VMNetworkAdapter -IsLegacy $False -VM $VM).IpAddresses).Length -eq 0) {
             Write-Host "Network adapter has no IP addresses, waiting..."
-            Start-Sleep -Seconds 1
+            Start-Sleep -Seconds 5
             continue;
         }
 
