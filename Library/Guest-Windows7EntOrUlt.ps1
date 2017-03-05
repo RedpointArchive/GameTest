@@ -222,6 +222,13 @@ try {
         Start-Sleep -Seconds 5
     } while ((!$PSExecProcess.HasExited -and $Stopwatch.elapsed -lt $Timeout))
      
+    if ($Stopwatch.elapsed -ge $Timeout) {
+        taskkill /f /im mstsc.exe
+        $HasCreatedRDPSession = $False
+        Write-Output "Test run timed out!"
+        exit 1
+    }
+
     taskkill /f /im mstsc.exe
     $HasCreatedRDPSession = $False
     Write-Output "Test run complete with exit code $($PSExecProcess.ExitCode)."
