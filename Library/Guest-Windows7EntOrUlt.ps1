@@ -21,7 +21,9 @@ if ($Target -eq "Baseline") {
     $Snapshot = "ReadyToRun"
 }
 
-$GameTestScript = (Get-Item -Path $GameTestScript).FullName
+if ($GameTestScript -ne "") {
+    $GameTestScript = (Get-Item -Path $GameTestScript).FullName
+}
 
 Set-Location $PSScriptRoot
 
@@ -131,7 +133,11 @@ try {
     }
 
     Write-Output "Writing test file..."
-    Copy-Item -Force $GameTestScript "Content-Win7\Test.ps1"
+    if ($GameTestScript -ne "") {
+        Copy-Item -Force $GameTestScript "Content-Win7\Test.ps1"
+    } else {
+        Set-Content -Path "Content-Win7\Test.ps1" -Value "exit 0"
+    }
 
     if (Test-Path $CredentialsFile) {
         Write-Output "Copying credentials file..."
