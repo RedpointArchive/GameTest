@@ -248,7 +248,7 @@ while (!(Test-Path $SteamAlivePath) -and $Stopwatch.elapsed -lt $Timeout) {
     Start-Sleep -Seconds 30
 }
 
-Write-Output "Waiting 10 seconds and then taking a final screenshot."
+Write-Output "Waiting 10 seconds and then taking a screenshot."
 Start-Sleep -Seconds 10
 Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
 
@@ -258,5 +258,16 @@ if (!(Test-Path $SteamAlivePath)) {
     Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
     exit 1
 }
+
+Write-Output "App is running, starting test script..."
+if (Test-Path C:\Content-Win7\Test.ps1) {
+    C:\Content-Win7\Test.ps1
+    if ($LastExitCode -ne 0) {
+        Write-Output "Test script reported failure!"
+        exit 1
+    }
+}
+
+Write-Output "Test script reported failure!"
 
 exit 0

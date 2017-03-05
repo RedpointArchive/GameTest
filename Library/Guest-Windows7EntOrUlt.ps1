@@ -1,4 +1,4 @@
-param([string] $GuestName, [string] $Target, [string] $CredentialsFile)
+param([string] $GuestName, [string] $Target, [string] $CredentialsFile, [string] $GameTestScript)
 
 $ErrorActionPreference = "Stop"
 $DidVMRestore = $False
@@ -20,6 +20,8 @@ if ($Target -eq "Baseline") {
 } else {
     $Snapshot = "ReadyToRun"
 }
+
+$GameTestScript = (Get-Content -Path $GameTestScript).FullName
 
 Set-Location $PSScriptRoot
 
@@ -129,7 +131,7 @@ try {
     }
 
     Write-Output "Writing test file..."
-    Set-Content -Path "Content-Win7\Test.ps1" -Value "exit 0" # TODO
+    Copy-Item -Force $GameTestScript "Content-Win7\Test.ps1"
 
     if (Test-Path $CredentialsFile) {
         Write-Output "Copying credentials file..."
