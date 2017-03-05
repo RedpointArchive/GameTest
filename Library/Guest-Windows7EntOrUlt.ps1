@@ -21,7 +21,7 @@ if ($Target -eq "Baseline") {
     $Snapshot = "ReadyToRun"
 }
 
-$GameTestScript = (Get-Content -Path $GameTestScript).FullName
+$GameTestScript = (Get-Item -Path $GameTestScript).FullName
 
 Set-Location $PSScriptRoot
 
