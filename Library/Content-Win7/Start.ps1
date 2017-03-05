@@ -263,11 +263,10 @@ Write-Output "App is running, starting test script..."
 if (Test-Path C:\Content-Win7\Test.ps1) {
     C:\Content-Win7\Test.ps1
     if ($LastExitCode -ne 0) {
-        Write-Output "Test script reported failure!"
+        Write-Output "Test script reported failure (exiting with exit code 1)!"
         exit 1
     }
 }
 
-Write-Output "Test script reported failure!"
-
+Write-Output "Test script reported success (exiting with exit code 0)!"
 exit 0
