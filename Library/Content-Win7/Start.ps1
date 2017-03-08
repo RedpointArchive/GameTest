@@ -2,6 +2,7 @@ $ErrorActionPreference = "Stop"
 trap
 {
     Write-Error $_
+    Write-Output "RESULT#FAILURE"
     Stop-Transcript
     exit 1
 }
@@ -23,16 +24,19 @@ if (Test-Path Credentials.ps1) {
 
 if ([string]::IsNullOrEmpty($SteamUsername) -or [string]::IsNullOrEmpty($SteamPassword)) {
     Write-Error "Unable to continue - no SteamUsername or SteamPassword set.  Configure a CredentialsFile and pass to GameTest."
+    Write-Output "RESULT#FAILURE"
     exit 1
 }
 
 if ([string]::IsNullOrEmpty($SteamAppId)) {
     Write-Error "Unable to continue - no SteamAppId set.  Configure a CredentialsFile and pass to GameTest."
+    Write-Output "RESULT#FAILURE"
     exit 1
 }
 
 if ([string]::IsNullOrEmpty($SteamTargetPath)) {
     Write-Error "Unable to continue - no SteamTargetPath set.  Configure a CredentialsFile and pass to GameTest."
+    Write-Output "RESULT#FAILURE"
     exit 1
 }
 
@@ -256,6 +260,7 @@ if (!(Test-Path $SteamAlivePath)) {
     Write-Output "$SteamAlivePath didn't appear within 5 minutes.  Assuming app start failure!"
     Write-Output "Taking a screenshot..."
     Take-Screenshot -Path "C:\Output-Win7\ScreenshotLatest.png"
+    Write-Output "RESULT#FAILURE"
     exit 1
 }
 
@@ -264,9 +269,11 @@ if (Test-Path C:\Content-Win7\Test.ps1) {
     C:\Content-Win7\Test.ps1
     if ($LastExitCode -ne 0) {
         Write-Output "Test script reported failure (exiting with exit code 1)!"
+        Write-Output "RESULT#FAILURE"
         exit 1
     }
 }
 
 Write-Output "Test script reported success (exiting with exit code 0)!"
+Write-Output "RESULT#SUCCESS"
 exit 0

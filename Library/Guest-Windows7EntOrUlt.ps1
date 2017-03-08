@@ -9,6 +9,7 @@ trap
         try {
             Write-Output "Restoring VM from snapshot..."
             $VM = Get-VM -Name $GuestName
+            Stop-VM -VM $VM -Force
             Restore-VMSnapshot -VM $VM -Name $Target -Confirm:$False
         } catch {}
     }
@@ -200,6 +201,7 @@ try {
     Write-Output "Monitoring PSExec and showing transcript data.."
     $Stopwatch = [Diagnostics.StopWatch]::StartNew()
     $Timeout = New-TimeSpan -Minutes 60
+    $SuccessState = $Null
     $TranscriptPosition = 0
     do {
         if (!(Test-Path Y:\Output-Win7)) {
@@ -220,6 +222,14 @@ try {
                 [Console]::Out.Write($Substr)
             }
 
+            if ($Content.Contains("RESULT#FAILURE")) {
+                $SuccessState = $False
+            }
+
+            if ($Content.Contains("RESULT#SUCCESS")) {
+                $SuccessState = $True
+            }
+
             if ($Content.Contains("Windows PowerShell Transcript End")) {
                 break;
             }
@@ -237,14 +247,27 @@ try {
 
     taskkill /f /im mstsc.exe
     $HasCreatedRDPSession = $False
-    Write-Output "Test run complete with exit code $($PSExecProcess.ExitCode)."
+    if ($SuccessState -eq $Null) {
+        Write-Output "Test run was indeterminate, assuming failure."
+        exit 1
+    }
+    if ($SuccessState -eq $False) {
+        Write-Output "Test run was failure."
+        exit 1
+    }
+    if ($SuccessState -eq $True) {
+        Write-Output "Test run was success."
+        exit 0
+    }
 
-    exit $PSExecProcess.ExitCode
+    Write-Output "Test run was even more indeterminate (this is a bug), assuming failure."
+    exit 1
 } finally {
     $DidVMRestore = $True
     try {
         Write-Output "Restoring VM from snapshot..."
         $VM = Get-VM -Name $GuestName
+        Stop-VM -VM $VM -Force
         Restore-VMSnapshot -VM $VM -Name $Target -Confirm:$False
     } catch {}
     if ($HasCreatedRDPSession) {
