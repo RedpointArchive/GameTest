@@ -34,6 +34,13 @@ $VM = Get-VM -Name $GuestName
 
 taskkill /f /im mstsc.exe
 
+if (Test-Path ..\Screenshots) {
+    Remove-Item -Recurse -Force ..\Screenshots
+}
+if (!(Test-Path ..\Screenshots)) {
+    mkdir ..\Screenshots
+}
+
 Write-Output "Restoring VM from snapshot..."
 Restore-VMSnapshot -VM $VM -Name $Snapshot -Confirm:$False
 Write-Output "Starting VM..."
